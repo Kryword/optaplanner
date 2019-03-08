@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="optaplanner-webexamples:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>optaplanner-webexamples</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="optaplanner-webexamples-7.17.0.Final.war">
+      <element id="artifact" artifact-name="optaplanner-webexamples:war exploded" />
+    </root>
+  </artifact>
+</component>
