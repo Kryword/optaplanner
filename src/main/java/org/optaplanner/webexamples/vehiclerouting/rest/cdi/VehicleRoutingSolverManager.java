@@ -157,6 +157,7 @@ public class VehicleRoutingSolverManager implements Serializable {
             location.setLatitude(jsonCustomer.getLatitude());
             location.setLongitude(jsonCustomer.getLongitude());
             customer.setLocation(location);
+            customers.add(customer);
         });
         vrs.setCustomerList(customers);
         
