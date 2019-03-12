@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.examples.vehiclerouting.domain.Customer;
@@ -118,5 +119,11 @@ public class DefaultVehicleRoutingRestService implements VehicleRoutingRestServi
     public void updateSolution(JsonVehicleRoutingSolution solucion) {
         solverManager.updateSolution(request.getSession().getId(), solucion);
         System.out.println("Solucion recibida: " + solucion.toString());
+    }
+    
+    @Override
+    public void uploadSolution(MultipartFormDataInput multipartFormDataInput){
+        System.out.println("RECIBIDO ARCHIVO!!!!!! " + multipartFormDataInput.toString());
+        solverManager.uploadSolution(multipartFormDataInput);
     }
 }

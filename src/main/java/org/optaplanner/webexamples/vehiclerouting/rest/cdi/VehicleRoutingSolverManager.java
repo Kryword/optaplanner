@@ -16,9 +16,18 @@
 
 package org.optaplanner.webexamples.vehiclerouting.rest.cdi;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +35,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.core.MultivaluedMap;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
@@ -141,6 +154,13 @@ public class VehicleRoutingSolverManager implements Serializable {
             solver.terminateEarly();
         }
 
+        try {
+            List<Path> paths = listSourceFiles(Paths.get("/home/"));
+            System.out.println("Lista de ficheros:" + paths);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(VehicleRoutingSolverManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return (vr != null);
     }
     
@@ -196,4 +216,95 @@ public class VehicleRoutingSolverManager implements Serializable {
         return true;
     }
 
+    public void uploadSolution(MultipartFormDataInput multipartFormDataInput){
+        MultivaluedMap<String, String> multivaluedMap = null;
+        String fileName = null;
+        InputStream inputStream = null;
+        String uploadFilePath = null;
+        try {
+            Map<String, List<InputPart>> map = multipartFormDataInput.getFormDataMap();
+            List<InputPart> lstInputPart = map.get("fileToUpload");
+ 
+            for(InputPart inputPart : lstInputPart){
+ 
+                // get filename to be uploaded
+                multivaluedMap = inputPart.getHeaders();
+                fileName = getFileName(multivaluedMap);
+ 
+                if(null != fileName && !"".equalsIgnoreCase(fileName)){
+ 
+                    // write & upload file to UPLOAD_FILE_SERVER
+                    inputStream = inputPart.getBody(InputStream.class,null);
+                    uploadFilePath = writeToFileServer(inputStream, fileName);
+                    System.out.println("AÑADIDO ARCHIVO EN " + uploadFilePath);
+                    // close the stream
+                    inputStream.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     *
+     * @param inputStream
+     * @param fileName
+     * @throws IOException
+     */
+    private String writeToFileServer(InputStream inputStream, String fileName) throws IOException {
+        OutputStream outputStream = null;
+        final String directory = "/home/";
+        final String qualifiedUploadFilePath = directory + fileName;
+ 
+        try {
+            outputStream = new FileOutputStream(new File(qualifiedUploadFilePath));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+            outputStream.flush();
+        }
+        catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        finally{
+            //release resource, if any
+            outputStream.close();
+        }
+        return qualifiedUploadFilePath;
+    }
+ 
+    /**
+     *
+     * @param multivaluedMap
+     * @return file name in String format
+     */
+    private String getFileName(MultivaluedMap<String, String> multivaluedMap) {
+        String[] contentDisposition = multivaluedMap.getFirst("Content-Disposition").split(";");
+ 
+        for (String filename : contentDisposition) {
+ 
+            if ((filename.trim().startsWith("filename"))) {
+                String[] name = filename.split("=");
+                String exactFileName = name[1].trim().replaceAll("\"", "");
+                return exactFileName;
+            }
+        }
+        return "UnknownFile";
+    }
+    
+    List<Path> listSourceFiles(Path dir) throws IOException {
+       List<Path> result = new ArrayList<>();
+       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.{vrp}")) {
+           for (Path entry: stream) {
+               result.add(entry);
+           }
+       } catch (DirectoryIteratorException ex) {
+           // I/O error encounted during the iteration, the cause is an IOException
+           throw ex.getCause();
+       }
+       return result;
+   }
 }

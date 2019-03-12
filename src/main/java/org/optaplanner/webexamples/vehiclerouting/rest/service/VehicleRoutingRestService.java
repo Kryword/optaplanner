@@ -21,9 +21,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.optaplanner.webexamples.vehiclerouting.rest.domain.JsonMessage;
 import org.optaplanner.webexamples.vehiclerouting.rest.domain.JsonVehicleRoutingSolution;
+
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 /**
  * @see DefaultVehicleRoutingRestService
@@ -33,26 +36,31 @@ public interface VehicleRoutingRestService {
 
     @GET
     @Path("/solution")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     JsonVehicleRoutingSolution getSolution();
 
     @POST
     @Path("/solution/solve")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     JsonMessage solve();
 
     @POST
     @Path("/solution/terminateEarly")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     JsonMessage terminateEarly();
 
     @POST
     @Path("/solution/clear")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     JsonMessage clearSolution();
     
     @POST
     @Path("/solution/update")
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     void updateSolution(JsonVehicleRoutingSolution solucion);
+    
+    @POST
+    @Path("/solution/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    void uploadSolution(MultipartFormDataInput multipartFormDataInput);
 }
