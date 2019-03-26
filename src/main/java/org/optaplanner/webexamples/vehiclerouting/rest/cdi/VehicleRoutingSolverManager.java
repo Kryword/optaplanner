@@ -66,7 +66,7 @@ public class VehicleRoutingSolverManager implements Serializable {
 
     private static final String SOLVER_CONFIG = "org/optaplanner/examples/vehiclerouting/solver/vehicleRoutingSolverConfig.xml";
     //private static final String IMPORT_DATASET = "/org/optaplanner/webexamples/vehiclerouting/salesianos-n15-k1.vrp";
-    private static final String PATH_DATASET = "/home/cristian/optaplanner/prueba-n15-k1.vrp";
+    private static final String PATH_DATASET = "prueba-n15-k1.vrp";
 
     private SolverFactory<VehicleRoutingSolution> solverFactory;
     // TODO After upgrading to JEE 7, replace ExecutorService by ManagedExecutorService:
@@ -153,14 +153,6 @@ public class VehicleRoutingSolverManager implements Serializable {
         if (solver != null){
             solver.terminateEarly();
         }
-
-        try {
-            List<Path> paths = listSourceFiles(Paths.get("/home/"));
-            System.out.println("Lista de ficheros:" + paths);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(VehicleRoutingSolverManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         return (vr != null);
     }
     
@@ -235,7 +227,7 @@ public class VehicleRoutingSolverManager implements Serializable {
  
                     // write & upload file to UPLOAD_FILE_SERVER
                     inputStream = inputPart.getBody(InputStream.class,null);
-                    uploadFilePath = writeToFileServer(inputStream, fileName);
+                    uploadFilePath = writeToFileServer(inputStream, "prueba-n15-k1.vrp");
                     System.out.println("AÑADIDO ARCHIVO EN " + uploadFilePath);
                     // close the stream
                     inputStream.close();
@@ -254,7 +246,7 @@ public class VehicleRoutingSolverManager implements Serializable {
      */
     private String writeToFileServer(InputStream inputStream, String fileName) throws IOException {
         OutputStream outputStream = null;
-        final String directory = "/home/";
+        final String directory = "";
         final String qualifiedUploadFilePath = directory + fileName;
  
         try {
@@ -294,17 +286,4 @@ public class VehicleRoutingSolverManager implements Serializable {
         }
         return "UnknownFile";
     }
-    
-    List<Path> listSourceFiles(Path dir) throws IOException {
-       List<Path> result = new ArrayList<>();
-       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.{vrp}")) {
-           for (Path entry: stream) {
-               result.add(entry);
-           }
-       } catch (DirectoryIteratorException ex) {
-           // I/O error encounted during the iteration, the cause is an IOException
-           throw ex.getCause();
-       }
-       return result;
-   }
 }
