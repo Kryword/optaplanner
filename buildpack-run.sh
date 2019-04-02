@@ -1,0 +1,1 @@
+cp standalone.xml $JBOSS_HOME/standalone/configuration/standalone.xml
