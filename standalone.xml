@@ -526,11 +526,7 @@
         </outbound-socket-binding>
     </socket-binding-group>
     <deployments>
-        <deployment name="kie-server-controller-standalone-7.17.0.Final-webc.war" runtime-name="kie-server-controller-standalone-7.17.0.Final-webc.war">
-            <content sha1="e76af87b16ad44309aa07342f0ac59acdd270642"/>
-        </deployment>
-        <deployment name="optaplanner" runtime-name="optaplanner-webexamples-7.15.0.Final.war">
-            <content sha1="a4d4e71e20446b1dfc865b0a38674cbf0ed183e4"/>
+        <deployment name="optaplanner" runtime-name="optaplanner-webexamples-7.17.0.Final.war">
         </deployment>
     </deployments>
 </server>
