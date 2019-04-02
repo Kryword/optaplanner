@@ -525,8 +525,4 @@
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
     </socket-binding-group>
-    <deployments>
-        <deployment name="optaplanner" runtime-name="optaplanner-webexamples-7.17.0.Final.war">
-        </deployment>
-    </deployments>
 </server>
